@@ -1,7 +1,11 @@
-# Treasury daily source verification
+# 财政部日度公开数据采集
 
-This directory is the root of a future dedicated private GitHub repository. Copy collector.py, test_collector.py and .github into that repository. No site credentials or site data are required.
+独立采集财政部 Daily Treasury Statement 中 TGA 的日终收盘余额。原始单位为百万美元，展示单位为十亿美元，保持每日口径。这个仓库只保存公开数据与采集程序，不保存私人研究或网站凭据。
 
-Run python3 -m unittest -v test_collector.py, then python3 collector.py treasury-data.json.gz. Output contains each official API response and request URL, UTC collection start, expected latest business date, unit declarations, coverage, and normalized daily TGA closing balances in billions of US dollars. Federal holiday and New York release-time rules fail closed on missing expected observations; exceptional closures or delays require investigation.
+GitHub 托管的云端任务直接读取财政部官方 API，校验日期、单位、分页、空值、重复记录、工作日连续性以及预期最新报告日。纽约夏令时和联邦假日参与发布时间计算。原始响应、官方请求地址、实际采集时间和归一化结果一并保存到 `data/treasury.json`。
 
-The full window starts 2023-01-01. Only on transport failure, the script retries a 90-day window and marks the result partial. Invalid schemas, units, incomplete pagination, missing values, duplicate dates or missing business days fail without an artifact. There is no PDF or local-data fallback. GitHub Actions is manual only, times out after five minutes, has read-only repository permissions, and retains the successful artifact for one day. There is no schedule or site delivery.
+每次先请求2023年以来的完整历史，仅在网络故障时退到最近90天并明确标注覆盖范围。校验失败时任务失败、保留上一份有效文件；不读本机数据，不接受人工数值输入。仓库写入由同一个不重叠的云端任务完成。
+
+运行 `python3 -m unittest -v test_collector.py` 检查计算边界；`python3 publish.py` 重新采集官方数据并写入文件。旧的 `collector.py OUTPUT.json.gz` 入口用于生成短期验证文件。
+
+当前已完成两次 GitHub 云端实际取数和写回验证。定时更新尚未启用，仓库保持私有，等待是否公开这一独立公开数据仓库的决定。采集成功与新站接入成功分别核验。
