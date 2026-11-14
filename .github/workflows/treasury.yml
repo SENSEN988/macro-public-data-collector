@@ -1,6 +1,9 @@
 name: Official Treasury daily collector
 on:
   workflow_dispatch:
+  schedule:
+    - cron: '17 22 * * *'
+    - cron: '47 23 * * *'
 permissions:
   contents: write
 concurrency:
